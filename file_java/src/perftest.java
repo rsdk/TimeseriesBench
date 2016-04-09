@@ -1,21 +1,15 @@
 /**
- * SAP HANA write performance
- * for IoT Sensordata
+ * File write performance
+ * for comparison to DB Write
  */
 
 
 public class perftest {
     public static void main(String[] argv) {
 
-        final String myname = "KK_STUDENT_030";
-        final String mysecret = "M7YaGrq4D3W6aG";
-        final String host = "ucchana11.informatik.tu-muenchen.de";
-        final String port = "31115";
-        final String options = "/?autocommit=false";
-        final String connstr = "jdbc:sap://" + host + ":" + port + options;
-        System.out.println("Connection String: " + connstr);
+        final String path = "myfiles/";
 
-        final int iValues = 10000; //100000; // Values pro Sensor
+        final int iValues = 1000000; //100000; // Values pro Sensor
         final int iSensors = 10;
         final int buffSize = 1000;
         final int VALUE_TYPE_TEMP_CENTIGRADE = 42;
@@ -26,7 +20,7 @@ public class perftest {
 
         // Start a thread for every Sensor
         for (int i = 0; i < iSensors; i++) {
-            s_threads[i] = new SensorWriter(connstr, myname, mysecret, i, iValues, buffSize);
+            s_threads[i] = new SensorWriter(path, i, iValues, buffSize);
             s_threads[i].start();
         }
 
