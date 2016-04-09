@@ -18,7 +18,7 @@ public class perftest {
         final int iValues = 10000; //100000; // Values pro Sensor
         final int iSensors = 10;
         final int buffSize = 1000;
-        final int VALUE_TYPE_TEMP_CENTIGRADE = 42;
+
         String tableName = "test";
 
         final long startTime = System.currentTimeMillis();
@@ -31,21 +31,7 @@ public class perftest {
         }
 
         // Wait till all Threads are finished
-        outerloop:
-        while (true) {
-            for (int i = 0; i < iSensors; i++) {
-                if (s_threads[i].isAlive()) {
-                    try {
-                        Thread.sleep(100);
-                        continue outerloop;
-                    } catch (InterruptedException e) {
-                        System.err.println("Error while waiting for Threads to finish. Error: " + e);
-                    }
-                } else {
-                    break outerloop;
-                }
-            }
-        }
+
 
         final int lines = iValues * iSensors;
         final long endTime = System.currentTimeMillis();

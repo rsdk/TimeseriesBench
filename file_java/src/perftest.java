@@ -9,10 +9,10 @@ public class perftest {
 
         final String path = "myfiles/";
 
-        final int iValues = 1000000; //100000; // Values pro Sensor
+        final int iValues = 10000000; //100000; // Values pro Sensor
         final int iSensors = 10;
         final int buffSize = 1000;
-        final int VALUE_TYPE_TEMP_CENTIGRADE = 42;
+
         String tableName = "test";
 
         final long startTime = System.currentTimeMillis();
@@ -27,6 +27,7 @@ public class perftest {
         // Wait till all Threads are finished
         outerloop:
         while (true) {
+            int alive_count = iSensors;
             for (int i = 0; i < iSensors; i++) {
                 if (s_threads[i].isAlive()) {
                     try {
@@ -35,8 +36,10 @@ public class perftest {
                     } catch (InterruptedException e) {
                         System.err.println("Error while waiting for Threads to finish. Error: " + e);
                     }
-                } else {
+                } else if (!(s_threads[i].isAlive()) && alive_count <= 1) {
                     break outerloop;
+                } else {
+                    alive_count--;
                 }
             }
         }
