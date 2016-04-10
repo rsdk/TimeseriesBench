@@ -1,17 +1,15 @@
 
-CREATE TABLE sensordata
+CREATE TABLE test
 (
-  uuid VARCHAR(36) NOT NULL,
-  time_ms BIGINT NOT NULL,
-  val_type BIGINT NOT NULL,
-  sensor_id BIGINT NOT NULL,
-  value FLOAT NOT NULL
+  sid INT NOT NULL,
+  dt TIMESTAMP NOT NULL,
+  value DOUBLE NOT NULL
 );
 
-PARTITION TABLE sensordata ON COLUMN uuid;
+PARTITION TABLE sensordata ON COLUMN sid;
 
 CREATE PROCEDURE insert_sd
 AS
-   INSERT INTO sensordata VALUES(?,?,?,?,?);
+   INSERT INTO test VALUES(?,?,?);
 
-PARTITION PROCEDURE insert_sd ON TABLE sensordata COLUMN uuid PARAMETER 0;
+PARTITION PROCEDURE insert_sd ON TABLE test COLUMN sid PARAMETER 0;
