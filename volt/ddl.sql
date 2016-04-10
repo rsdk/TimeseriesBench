@@ -6,7 +6,7 @@ CREATE TABLE test
   value DOUBLE NOT NULL
 );
 
-PARTITION TABLE sensordata ON COLUMN sid;
+PARTITION TABLE test ON COLUMN sid;
 
 CREATE PROCEDURE insert_sd
 AS
