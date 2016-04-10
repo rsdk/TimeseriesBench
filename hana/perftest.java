@@ -31,6 +31,24 @@ public class perftest {
         }
 
         // Wait till all Threads are finished
+        outerloop:
+        while (true) {
+            int alive_count = iSensors;
+            for (int i = 0; i < iSensors; i++) {
+                if (s_threads[i].isAlive()) {
+                    try {
+                        Thread.sleep(100);
+                        continue outerloop;
+                    } catch (InterruptedException e) {
+                        System.err.println("Error while waiting for Threads to finish. Error: " + e);
+                    }
+                } else if (!(s_threads[i].isAlive()) && alive_count <= 1) {
+                    break outerloop;
+                } else {
+                    alive_count--;
+                }
+            }
+        }
 
 
         final int lines = iValues * iSensors;
