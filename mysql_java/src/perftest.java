@@ -12,7 +12,8 @@ public class perftest {
         final String host = "127.0.0.1";
         final String port = "3306";
         final String dbname = "/test";
-        final String connstr = "jdbc:mysql://" + host + ":" + port + dbname;
+        final String options = "?autoReconnect=true&useSSL=false";
+        final String connstr = "jdbc:mysql://" + host + ":" + port + dbname + options;
         System.out.println("Connection String: " + connstr);
 
         final int iValues = 1000000; //100000; // Values pro Sensor
