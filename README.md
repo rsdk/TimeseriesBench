@@ -1,2 +1,2 @@
 # TimeseriesBench
-Benchmartk for timeseries data in IoT context
+Benchmark for timeseries data in IoT context
