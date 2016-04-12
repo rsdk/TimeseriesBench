@@ -20,7 +20,7 @@ class SensorWriter extends Thread {
         this.n_values = n_values;
         this.buffSize = buffSize;
         try {
-            this.conn = DriverManager.getConnection(connstr, username, password);
+            conn = DriverManager.getConnection(connstr, username, password);
             conn.setAutoCommit(false);
         } catch (SQLException e) {
             System.err.println("Connection Failed. Error: " + e);
@@ -31,7 +31,6 @@ class SensorWriter extends Thread {
         }
         try {
             pstmt = conn.prepareStatement("INSERT INTO test VALUES(?,?,?)");
-
         } catch (SQLException e) {
             System.err.println("Prepare Statement Failed. Error: " + e);
         }
@@ -47,7 +46,7 @@ class SensorWriter extends Thread {
             pstmt.setDouble(3, value);
             pstmt.addBatch();
         } catch (SQLException e) {
-            System.err.println("Execute Update Failed at Sensor " + sid + ". Error: " + e);
+            System.err.println("Add Batch Failed at Sensor " + sid + ". Error: " + e);
         }
     }
 
@@ -61,7 +60,7 @@ class SensorWriter extends Thread {
                     pstmt.clearWarnings();
                     conn.commit();
                 } catch (SQLException e) {
-                    System.err.println("Commit failed at Sensor " + sid + ". Error: " + e);
+                    System.err.println("Execute Batch failed at Sensor " + sid + ". Error: " + e);
                 }
             }
         }
