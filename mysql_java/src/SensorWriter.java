@@ -30,8 +30,8 @@ class SensorWriter extends Thread {
             System.exit(1);
         }
         try {
-            this.pstmt = this.conn.prepareStatement("INSERT INTO test VALUES(?,?,?)");
-            this.pstmt.setInt(1, this.sid);
+            pstmt = conn.prepareStatement("INSERT INTO test VALUES(?,?,?)");
+
         } catch (SQLException e) {
             System.err.println("Prepare Statement Failed. Error: " + e);
         }
@@ -42,30 +42,35 @@ class SensorWriter extends Thread {
         Timestamp sd = Timestamp.valueOf(ldt);
         double value = rand.nextDouble();
         try {
-            this.pstmt.setTimestamp(2, sd);
-            this.pstmt.setDouble(3, value);
-            this.pstmt.executeUpdate();
+            pstmt.setInt(1, sid);
+            pstmt.setTimestamp(2, sd);
+            pstmt.setDouble(3, value);
+            pstmt.addBatch();
         } catch (SQLException e) {
-            System.err.println("Execute Update Failed at Sensor " + this.sid + ". Error: " + e);
+            System.err.println("Execute Update Failed at Sensor " + sid + ". Error: " + e);
         }
     }
 
     public void run() {
-        for (int i = 0; i < this.n_values; i++) {
+        for (int i = 0; i < n_values; i++) {
             this.insert();
-            if (i % this.buffSize == 0) {
+
+            if (i % buffSize == 0) {
                 try {
-                    this.conn.commit();
+                    pstmt.executeBatch();
+                    pstmt.clearWarnings();
+                    conn.commit();
                 } catch (SQLException e) {
-                    System.err.println("Commit failed at Sensor " + this.sid + ". Error: " + e);
+                    System.err.println("Commit failed at Sensor " + sid + ". Error: " + e);
                 }
             }
         }
         try {
-            this.conn.commit();
-            this.conn.close();
+            pstmt.executeBatch();
+            conn.commit();
+            conn.close();
         } catch (SQLException e) {
-            System.err.println("Last commit or close failed at Sensor " + this.sid + ". Error: " + e);
+            System.err.println("Last commit or close failed at Sensor " + sid + ". Error: " + e);
         }
     }
 }

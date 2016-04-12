@@ -4,20 +4,21 @@
  */
 
 
+
 public class perftest {
     public static void main(String[] argv) {
 
         final String myname = "root";
-        final String mysecret = "dc-mysql";
-        final String host = "127.0.0.1";
+        final String mysecret = "benchAT16";
+        final String host = "10.0.12.190";
         final String port = "3306";
         final String dbname = "/test";
         final String options = "?autoReconnect=true&useSSL=false";
         final String connstr = "jdbc:mysql://" + host + ":" + port + dbname + options;
         System.out.println("Connection String: " + connstr);
 
-        final int iValues = 1000000; //100000; // Values pro Sensor
-        final int iSensors = 10;
+        final int iValues = Integer.parseInt(argv[0]); //100000; // Values pro Sensor
+        final int iSensors = Integer.parseInt(argv[1]);
         final int buffSize = 1000;
 
         String tableName = "test";
