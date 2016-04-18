@@ -8,18 +8,29 @@
 public class perftest {
     public static void main(String[] argv) {
 
-        final String myname = "root";
-        final String mysecret = "benchAT16";
-        final String host = "10.0.12.190";
+        final String myname = "test"; //root
+        final String mysecret = "datacast"; //benchAT16
+        final String host = "192.168.1.8"; //10.0.12.190
         final String port = "3306";
         final String dbname = "/test";
-        final String options = "?autoReconnect=true&useSSL=false";
+        final String options = "?autoReconnect=true&useSSL=false&rewriteBatchedStatements=true";
         final String connstr = "jdbc:mysql://" + host + ":" + port + dbname + options;
         System.out.println("Connection String: " + connstr);
 
-        final int iValues = Integer.parseInt(argv[0]); //100000; // Values pro Sensor
-        final int iSensors = Integer.parseInt(argv[1]);
-        final int buffSize = 1000;
+        final int iValues;
+        final int iSensors;
+        final int buffSize;
+        if (argv.length < 3) {
+            iValues = 1000000;
+            iSensors = 10;
+            buffSize = 1000;
+        } else {
+            iValues = Integer.parseInt(argv[0]); // Values pro Sensor
+            iSensors = Integer.parseInt(argv[1]);
+            buffSize = Integer.parseInt(argv[2]);
+        }
+
+
 
         String tableName = "test";
 

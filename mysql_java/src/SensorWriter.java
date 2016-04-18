@@ -1,6 +1,6 @@
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.Random;
+import java.util.SplittableRandom;
 
 /**
  * Created by rene on 09.04.2016.
@@ -8,7 +8,7 @@ import java.util.Random;
 
 class SensorWriter extends Thread {
 
-    private final Random rand = new Random();
+    private final SplittableRandom rand = new SplittableRandom();
     private final int sid;
     private final int n_values;
     private final int buffSize;
