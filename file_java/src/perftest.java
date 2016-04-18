@@ -9,8 +9,8 @@ public class perftest {
 
         final String path = "myfiles/";
 
-        final int iValues = 10000000; //100000; // Values pro Sensor
-        final int iSensors = 10;
+        final int iValues = 1000 * 1000 * 10; //100000; // Values pro Sensor
+        final int iSensors = 1;
         final int buffSize = 1000;
 
         String tableName = "test";
