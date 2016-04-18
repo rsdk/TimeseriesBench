@@ -17,27 +17,28 @@ class SensorWriter extends Thread {
     private final Random rand = new Random();
     private final int sid;
     private final int n_values;
+    private final int buffSize;
     private MongoClient conn;
     private DBCollection coll;
     private DB db;
+    private BasicDBObject[] batch;
 
     public SensorWriter(String connstr, String username, String password, int sensorid, int n_values, int buffSize) {
         this.sid = sensorid;
-
-
         this.n_values = n_values;
-        //this.buffSize = buffSize;
+        this.buffSize = buffSize;
+        batch = new BasicDBObject[buffSize];
         try {
-            this.conn = new MongoClient("localhost");
+            conn = new MongoClient("localhost");
             db = conn.getDB("mydb");
-            this.coll = db.getCollection(String.valueOf(sid));
+            coll = db.getCollection(String.valueOf(sid));
             //conn.setAutoCommit(false);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
     }
 
-    private void insert() {
+    private BasicDBObject insert() {
         LocalDateTime ldt = LocalDateTime.now();
         Timestamp sd = Timestamp.valueOf(ldt);
         double value = rand.nextDouble();
@@ -45,13 +46,17 @@ class SensorWriter extends Thread {
         BasicDBObject doc = new BasicDBObject("sid", sid)
                 .append("dt", sd)
                 .append("value", value);
-        coll.insert(doc);
+        return doc;
     }
 
     public void run() {
+        int i_buffer = 0;
         for (int i = 0; i < this.n_values; i++) {
-            this.insert();
+            batch[i_buffer++] = insert();
+            if (i_buffer >= buffSize) {
+                i_buffer = 0;
+                coll.insert(batch);
+            }
         }
-
     }
 }
