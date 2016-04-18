@@ -11,13 +11,22 @@ public class perftest {
         final String mysecret = "M7YaGrq4D3W6aG";
         final String host = "ucchana11.informatik.tu-muenchen.de";
         final String port = "31115";
-        final String options = "/?autocommit=false";
+        final String options = "/?autocommit=false&reconnect=true";
         final String connstr = "jdbc:sap://" + host + ":" + port + options;
         System.out.println("Connection String: " + connstr);
 
-        final int iValues = 10000; //100000; // Values pro Sensor
-        final int iSensors = 10;
-        final int buffSize = 1000;
+        final int iValues;
+        final int iSensors;
+        final int buffSize;
+        if (argv.length < 3) {
+            iValues = 100000;
+            iSensors = 10;
+            buffSize = 1000;
+        } else {
+            iValues = Integer.parseInt(argv[0]); // Values pro Sensor
+            iSensors = Integer.parseInt(argv[1]);
+            buffSize = Integer.parseInt(argv[2]);
+        }
 
         String tableName = "test";
 
