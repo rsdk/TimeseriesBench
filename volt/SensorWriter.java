@@ -6,7 +6,7 @@ import org.voltdb.client.NullCallback;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Random;
+import java.util.SplittableRandom;
 
 /**
  * VoltDB SensorWriter
@@ -14,7 +14,7 @@ import java.util.Random;
 
 class SensorWriter extends Thread {
 
-    private final Random rand = new Random();
+    private final SplittableRandom rand = new SplittableRandom();
     private final int sid;
     private final int n_values;
     private final int buffSize;

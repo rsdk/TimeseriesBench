@@ -21,7 +21,7 @@ public class perftest {
         final int iSensors;
         final int buffSize;
         if (argv.length < 3) {
-            iValues = 1000000;
+            iValues = 100000;
             iSensors = 10;
             buffSize = 1000;
         } else {

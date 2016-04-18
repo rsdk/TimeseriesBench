@@ -16,9 +16,18 @@ public class perftest {
         final String connstr = "jdbc:mongo://" + host; // + ":" + port + dbname + options;
         System.out.println("Connection String: " + connstr);
 
-        final int iValues = 1000000; //100000; // Values pro Sensor
-        final int iSensors = 10;
-        final int buffSize = 1000;
+        final int iValues;
+        final int iSensors;
+        final int buffSize;
+        if (argv.length < 3) {
+            iValues = 100000;
+            iSensors = 10;
+            buffSize = 1000;
+        } else {
+            iValues = Integer.parseInt(argv[0]); // Values pro Sensor
+            iSensors = Integer.parseInt(argv[1]);
+            buffSize = Integer.parseInt(argv[2]);
+        }
 
         String tableName = "test";
 
