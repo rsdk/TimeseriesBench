@@ -1,5 +1,4 @@
 import com.mongodb.async.client.MongoClient;
-import com.mongodb.async.client.MongoClients;
 import com.mongodb.async.client.MongoCollection;
 import com.mongodb.async.client.MongoDatabase;
 import org.bson.Document;
@@ -22,19 +21,19 @@ class SensorWriter extends Thread {
     private final ArrayList<Document> batch;
 
 
-    public SensorWriter(String connstr, int sensorid, int n_values, int buffSize) {
+    public SensorWriter(MongoClient connstr, int sensorid, int n_values, int buffSize) {
         this.sid = sensorid;
         this.n_values = n_values;
         this.buffSize = buffSize;
+        this.mClient = connstr;
         batch = new ArrayList<>(buffSize);
-        mClient = MongoClients.create(connstr);
+        //mClient = MongoClients.create(connstr);
         MongoDatabase db = mClient.getDatabase("mydb");
         coll = db.getCollection(String.valueOf(sid));
     }
 
     private Document insert() {
-        LocalDateTime ldt = LocalDateTime.now();
-        Timestamp sd = Timestamp.valueOf(ldt);
+        long sd = Timestamp.valueOf(LocalDateTime.now()).getTime();
         double value = rand.nextDouble();
 
         return new Document("sid", sid)
@@ -48,10 +47,11 @@ class SensorWriter extends Thread {
             batch.add(insert());
             if (i % buffSize == 0) {
                 coll.insertMany(batch, (aVoid, throwable) -> {
+                    //System.out.print(throwable);
                 }); // no Callback necessary
                 batch.clear();
             }
         }
-        mClient.close();
+        //mClient.close();
     }
 }

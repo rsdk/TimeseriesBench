@@ -1,3 +1,6 @@
+import com.mongodb.async.client.MongoClient;
+import com.mongodb.async.client.MongoClients;
+
 /**
  * mysql write performance
  * for IoT Sensordata
@@ -6,16 +9,17 @@
 
 public class perftest {
     public static void main(String[] argv) {
-        final String connstr = "mongodb://localhost";
+        final String connstr = "mongodb://192.168.1.9:27017";
+        MongoClient mClient;
         System.out.println("Connection String: " + connstr);
 
         final int iValues;
         final int iSensors;
         final int buffSize;
         if (argv.length < 3) {
-            iValues = 100000;
-            iSensors = 10;
-            buffSize = 1000;
+            iValues = 10000000;
+            iSensors = 1;
+            buffSize = 100;
         } else {
             iValues = Integer.parseInt(argv[0]); // Values pro Sensor
             iSensors = Integer.parseInt(argv[1]);
@@ -24,10 +28,10 @@ public class perftest {
 
         final long startTime = System.currentTimeMillis();
         SensorWriter[] s_threads = new SensorWriter[iSensors];
-
+        mClient = MongoClients.create(connstr);
         // Start a thread for every Sensor
         for (int i = 0; i < iSensors; i++) {
-            s_threads[i] = new SensorWriter(connstr, i, iValues, buffSize);
+            s_threads[i] = new SensorWriter(mClient, i, iValues, buffSize);
             s_threads[i].start();
         }
 
@@ -50,7 +54,7 @@ public class perftest {
                 }
             }
         }
-
+        mClient.close();
 
         final int lines = iValues * iSensors;
         final long endTime = System.currentTimeMillis();
