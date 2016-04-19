@@ -1,3 +1,6 @@
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+
 /**
  * mysql write performance
  * for IoT Sensordata
@@ -71,5 +74,10 @@ public class perftest {
         System.out.printf("Runtime: %f.\n", delta);
         System.out.printf("Time per Insert: %8.8f\n", delta / lines);
         System.out.printf("Inserts per Second: %8.8f\n", 1 / (delta / lines) * 1000);
+        try (PrintWriter out = new PrintWriter("results.txt")) {
+            out.println("mysql_myisam;" + delta + ";" + lines + ";" + iValues + ";" + iSensors + ";" + buffSize);
+        } catch (FileNotFoundException e) {
+            System.out.println("Error while writing results: " + e);
+        }
     }
 }

@@ -1,5 +1,7 @@
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.sql.Timestamp;
@@ -60,5 +62,10 @@ public class file_java_nio {
         System.out.printf("Time per row in ms: %8.6f\n", delta / n_values);
         System.out.printf("Row-Inserts per s: %8.2f\n", 1 / (delta / n_values) * 1000);
         System.out.printf("MB/s: %8.2f\n", ((4 + 8 + 8) * n_values / 1000) / delta);
+        try (PrintWriter out = new PrintWriter("results.txt")) {
+            out.println("file;" + delta + ";" + n_values + ";" + n_values + ";" + 1 + ";" + bufsize);
+        } catch (FileNotFoundException e) {
+            System.out.println("Error while writing results: " + e);
+        }
     }
 }
