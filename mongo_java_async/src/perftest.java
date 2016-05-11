@@ -3,6 +3,8 @@ import com.mongodb.async.client.MongoClients;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * mongodb write performance
@@ -12,7 +14,7 @@ import java.io.PrintWriter;
 
 public class perftest {
     public static void main(String[] argv) {
-        final String connstr = "mongodb://192.168.1.9:27017";
+        final String connstr = "mongodb://10.0.7.178:27017/?maxPoolSize=200&waitQueueMultiple=10000&connectTimeoutMS=200000&socketTimeoutMS=200000&waitQueueTimeoutMS=200000";
         MongoClient mClient;
         System.out.println("Connection String: " + connstr);
 
@@ -20,9 +22,9 @@ public class perftest {
         final int iSensors;
         final int buffSize;
         if (argv.length < 3) {
-            iValues = 10000000;
+            iValues = 10000;
             iSensors = 1;
-            buffSize = 100;
+            buffSize = 1;
         } else {
             iValues = Integer.parseInt(argv[0]); // Values pro Sensor
             iSensors = Integer.parseInt(argv[1]);
@@ -30,33 +32,30 @@ public class perftest {
         }
 
         final long startTime = System.currentTimeMillis();
-        SensorWriter[] s_threads = new SensorWriter[iSensors];
+        List<SensorWriter> s_threads = new ArrayList<SensorWriter>(iSensors);
         mClient = MongoClients.create(connstr);
         // Start a thread for every Sensor
         for (int i = 0; i < iSensors; i++) {
-            s_threads[i] = new SensorWriter(mClient, i, iValues, buffSize);
-            s_threads[i].start();
+            SensorWriter sw = new SensorWriter(mClient, i, iValues, buffSize);
+            sw.start();
+            s_threads.add(sw);
         }
 
         // Wait till all Threads are finished
-        outerloop:
-        while (true) {
-            int alive_count = iSensors;
-            for (int i = 0; i < iSensors; i++) {
-                if (s_threads[i].isAlive()) {
+        while (s_threads.size() > 0) {
+            for (int i = s_threads.size() - 1; i >= 0; i--) {
+                if (s_threads.get(i).isAlive()) {
                     try {
                         Thread.sleep(100);
-                        continue outerloop;
                     } catch (InterruptedException e) {
                         System.err.println("Error while waiting for Threads to finish. Error: " + e);
                     }
-                } else if (!(s_threads[i].isAlive()) && alive_count <= 1) {
-                    break outerloop;
                 } else {
-                    alive_count--;
+                    s_threads.remove(i);
                 }
             }
         }
+
         mClient.close();
 
         final int lines = iValues * iSensors;
