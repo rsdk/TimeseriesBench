@@ -14,10 +14,20 @@ import java.util.Random;
  */
 
 public class file_java_nio {
-    public static void main(String[] args) throws IOException {
-        final int sid_n = 10;
-        final int n_values = 1000 * 1000 * 10;
-        final int bufsize = 10000;
+    public static void main(String[] argv) throws IOException {
+
+        final int n_values;
+        final int sid_n;
+        final int bufsize;
+        if (argv.length < 3) {
+            n_values = 10000000;
+            sid_n = 10;
+            bufsize = 10000;
+        } else {
+            n_values = Integer.parseInt(argv[0]); // Values pro Sensor
+            sid_n = Integer.parseInt(argv[1]);
+            bufsize = Integer.parseInt(argv[2]);
+        }
 
         final Random rand = new Random();
 

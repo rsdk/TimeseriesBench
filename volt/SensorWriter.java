@@ -48,17 +48,11 @@ class SensorWriter extends Thread {
     public void run() {
         for (int i = 0; i < this.n_values; i++) {
             this.insert();
-            if (i % this.buffSize == 0) {
-                try {
-                    this.client.drain();
-                } catch (NoConnectionsException | java.lang.InterruptedException e) {
-                    System.err.println("Drain failed at Sensor " + this.sid + ". Error: " + e);
-                }
-            }
         }
         try {
+            this.client.drain();
             this.client.close();
-        } catch (java.lang.InterruptedException e) {
+        } catch (NoConnectionsException | java.lang.InterruptedException e) {
             System.err.println("Client close failed at Sensor " + this.sid + ". Error: " + e);
         }
     }
