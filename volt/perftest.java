@@ -1,5 +1,7 @@
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * SAP HANA write performance
@@ -10,37 +12,45 @@ import java.io.PrintWriter;
 public class perftest {
     public static void main(String[] argv) {
 
-        final String host = "192.168.178.105";
+        final String host = "10.0.7.187";
 
-        final int iValues = 2000000; //100000; // Values pro Sensor
-        final int iSensors = 5;
-        final int buffSize = 10000;
+
+        final int iValues;
+        final int iSensors;
+        final int buffSize;
+
+        if (argv.length < 3) {
+            iValues = 100000;
+            iSensors = 8;
+            buffSize = 1000;
+        } else {
+            iValues = Integer.parseInt(argv[0]); // Values pro Sensor
+            iSensors = Integer.parseInt(argv[1]);
+            buffSize = Integer.parseInt(argv[2]);
+        }
+
 
         final long startTime = System.currentTimeMillis();
-        SensorWriter[] s_threads = new SensorWriter[iSensors];
+        List<SensorWriter> s_threads = new ArrayList<SensorWriter>(iSensors);
 
         // Start a thread for every Sensor
         for (int i = 0; i < iSensors; i++) {
-            s_threads[i] = new SensorWriter(host, i, iValues, buffSize);
-            s_threads[i].start();
+            SensorWriter sw = new SensorWriter(host, i, iValues, buffSize);
+            sw.start();
+            s_threads.add(sw);
         }
 
         // Wait till all Threads are finished
-        outerloop:
-        while (true) {
-            int alive_count = iSensors;
-            for (int i = 0; i < iSensors; i++) {
-                if (s_threads[i].isAlive()) {
+        while (s_threads.size() > 0) {
+            for (int i = s_threads.size() - 1; i >= 0; i--) {
+                if (s_threads.get(i).isAlive()) {
                     try {
                         Thread.sleep(100);
-                        continue outerloop;
                     } catch (InterruptedException e) {
                         System.err.println("Error while waiting for Threads to finish. Error: " + e);
                     }
-                } else if (!(s_threads[i].isAlive()) && alive_count <= 1) {
-                    break outerloop;
                 } else {
-                    alive_count--;
+                    s_threads.remove(i);
                 }
             }
         }
