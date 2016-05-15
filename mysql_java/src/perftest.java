@@ -11,9 +11,9 @@ import java.io.PrintWriter;
 public class perftest {
     public static void main(String[] argv) {
 
-        final String myname = "test"; //root
-        final String mysecret = "datacast"; //benchAT16
-        final String host = "192.168.1.8"; //10.0.12.190
+        final String myname = "root"; //root
+        final String mysecret = "benchAT16"; //benchAT16
+        final String host = "10.0.12.190"; //10.0.12.190
         final String port = "3306";
         final String dbname = "/test";
         final String options = "?autoReconnect=true&useSSL=false&rewriteBatchedStatements=true";
@@ -79,5 +79,23 @@ public class perftest {
         } catch (FileNotFoundException e) {
             System.out.println("Error while writing results: " + e);
         }
-    }
+
+        SensorReader sr = new SensorReader(connstr, myname, mysecret);
+        double count = sr.get_count();
+
+        System.out.printf("Count: %.0f", count);
+        System.out.println();
+
+        final long startTime_read = System.currentTimeMillis();
+        double[] res = sr.get_mean_for_sid(0);
+        final long endTime_read = System.currentTimeMillis();
+        final double delta_read = (double) endTime_read - (double) startTime_read;
+        System.out.printf("Time for read min/max/mean/stddev: %.0f ms\n", delta_read);
+        System.out.println();
+
+        System.out.println("min, max, mean and stddev: ");
+        for (int i = 0; i < res.length; i++) {
+            System.out.println(res[i]);
+
+        }
 }
