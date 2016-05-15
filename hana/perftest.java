@@ -10,10 +10,10 @@ import java.io.PrintWriter;
 public class perftest {
     public static void main(String[] argv) {
 
-        final String myname = "KK_STUDENT_030";
-        final String mysecret = "M7YaGrq4D3W6aG";
-        final String host = "ucchana11.informatik.tu-muenchen.de";
-        final String port = "31115";
+        final String myname = "KK_MASTER";//"SYSTEM";
+        final String mysecret = "ZvLfSDG9DWvVrt"; //"benchAT16";
+        final String host = "ucchana11.informatik.tu-muenchen.de"; //"10.0.13.183"; //
+        final String port = "31115"; //"30015";
         final String options = "/?autocommit=false&reconnect=true";
         final String connstr = "jdbc:sap://" + host + ":" + port + options;
         System.out.println("Connection String: " + connstr);
@@ -22,9 +22,9 @@ public class perftest {
         final int iSensors;
         final int buffSize;
         if (argv.length < 3) {
-            iValues = 100000;
-            iSensors = 10;
-            buffSize = 1000;
+            iValues = 100;
+            iSensors = 1;
+            buffSize = 10;
         } else {
             iValues = Integer.parseInt(argv[0]); // Values pro Sensor
             iSensors = Integer.parseInt(argv[1]);
@@ -62,18 +62,35 @@ public class perftest {
             }
         }
 
-
         final int lines = iValues * iSensors;
         final long endTime = System.currentTimeMillis();
         final double delta = (double) endTime - (double) startTime;
 
         System.out.printf("Runtime: %f.\n", delta);
-        System.out.printf("Time per Insert: %8.8f\n", delta / lines);
-        System.out.printf("Inserts per Second: %8.8f\n", 1 / (delta / lines) * 1000);
+        System.out.printf("Time per Insert: %.3f ms\n", delta / lines);
+        System.out.printf("Inserts per Second: %.0f\n", 1 / (delta / lines) * 1000);
         try (PrintWriter out = new PrintWriter("results.txt")) {
             out.println("hana;" + delta + ";" + lines + ";" + iValues + ";" + iSensors + ";" + buffSize);
         } catch (FileNotFoundException e) {
             System.out.println("Error while writing results: " + e);
         }
+        SensorReader sr = new SensorReader(connstr, myname, mysecret);
+        double count = sr.get_count();
+
+        System.out.printf("Count: %.0f", count);
+        System.out.println();
+
+        final long startTime_read = System.currentTimeMillis();
+        double[] res = sr.get_mean_for_sid(0);
+        final long endTime_read = System.currentTimeMillis();
+        final double delta_read = (double) endTime_read - (double) startTime_read;
+        System.out.printf("Time for read min/max/mean/stddev: %.0f ms\n", delta_read);
+        System.out.println();
+
+        System.out.println("min, max, mean and stddev: ");
+        for (int i = 0; i < res.length; i++) {
+            System.out.println(res[i]);
+        }
+
     }
 }
